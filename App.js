@@ -8,7 +8,7 @@
 
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import Main from './src/Navigators/Main';
+import Main from './src/Navigators/main';
 import {Provider} from 'react-redux';
 import {store} from './src/store/index';
 

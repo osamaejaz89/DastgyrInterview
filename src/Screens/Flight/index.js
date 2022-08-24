@@ -8,6 +8,11 @@ import {
   Image,
   RefreshControl,
 } from 'react-native';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import {renderEmpty} from '../../Utils/constant';
 
 const Flight = props => {
   const [page, setPage] = useState(1);
@@ -17,7 +22,6 @@ const Flight = props => {
   const [pageLimit, setPageLimit] = useState(100);
 
   const requestAPI = pageNumber => {
-    console.log('Request API');
     if (pageNumber === 1) {
       setLoading(true);
     } else {
@@ -48,69 +52,47 @@ const Flight = props => {
     requestAPI(page);
   }, []);
 
-  const renderEmpty = () => !loading && <Text>No Data at the moment</Text>;
-
   const renderFooter = () => (
     <ActivityIndicator size={'small'} animating={moreLoading} />
   );
 
   const renderItem = ({item}) => {
     return (
-      <View
-        style={{
-          flex: 1,
-          margin: 10,
-          backgroundColor: 'white',
-          borderWidth: 1,
-          borderRadius: 10,
-          padding: 5,
-        }}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text>Passenger Name: {item.name}</Text>
-          <Text>No of Trips: {item.trips}</Text>
+      <View style={styles.renderStyleView}>
+        <View style={styles.flexStyle}>
+          <Text style={styles.textFontWeight}>Passenger Name: {item.name}</Text>
+          <Text style={styles.textFontWeight}>No of Trips: {item.trips}</Text>
         </View>
 
         <View>
           {item.airline.map((i, t) => {
             return (
               <View key={t}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  <Text>{i.name}</Text>
-                  <Text>{i.country}</Text>
+                <View style={styles.flexStyle}>
+                  <Text style={styles.textFontWeight}>{i.name}</Text>
+                  <Text style={styles.textFontWeight}>{i.country}</Text>
                 </View>
                 <View
-                  style={{
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                  }}>
+                  style={styles.flexColStyle}>
                   <Image
                     style={styles.logo}
                     source={{
                       uri: i.logo,
                     }}
                   />
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      justifyContent: 'center',
-                      alignSelf: 'center',
-                      fontWeight: 'bold',
-                    }}>
-                    {i.slogan}
-                  </Text>
+                  <Text style={styles.slogan}>{i.slogan}</Text>
                 </View>
-                <Text style={{textAlign: 'center'}}>{i.head_quaters}</Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  <Text>{i.website}</Text>
-                  <Text>{i.established}</Text>
+                <Text
+                  style={styles.headQuartersStyle}>
+                  {i.head_quaters}
+                </Text>
+                <View style={styles.flexStyle}>
+                  <Text
+                    style={{color: 'blue', textDecorationLine: 'underline'}}
+                    onPress={() => Linking.openURL(i.website)}>
+                    {i.website}
+                  </Text>
+                  <Text style={styles.textFontWeight}>{i.established}</Text>
                 </View>
               </View>
             );
@@ -122,9 +104,7 @@ const Flight = props => {
 
   return (
     <View style={styles.listItem}>
-      <Text style={{justifyContent: 'center', alignSelf: 'center'}}>
-        Passenger Data
-      </Text>
+      <Text style={styles.heading}>Passenger Data</Text>
       <FlatList
         data={flightData}
         refreshControl={
@@ -138,7 +118,7 @@ const Flight = props => {
         renderItem={(item, index) => renderItem(item, index)}
         keyExtractor={(item, index) => index.toString()}
         ListFooterComponent={renderFooter}
-        ListEmptyComponent={renderEmpty}
+        ListEmptyComponent={renderEmpty(loading)}
         onEndReachedThreshold={0.2}
         onEndReached={() => {
           if (page <= pageLimit) {
@@ -153,29 +133,46 @@ const Flight = props => {
 const styles = StyleSheet.create({
   listItem: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#E6E7EC',
   },
   logo: {
-    width: 200,
-    height: 60,
+    width: wp(45),
+    height: hp(8),
     justifyContent: 'center',
     alignSelf: 'center',
   },
-  loading: {
+  renderStyleView: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    margin: wp(3),
+    backgroundColor: 'white',
+    borderWidth: wp(0.1),
+    borderRadius: wp(3),
+    padding: wp(3),
   },
-  footerText: {
-    flex: 1,
-    alignItems: 'center',
+  heading: {
     justifyContent: 'center',
-    marginVertical: 10,
+    alignSelf: 'center',
+    fontSize: wp(10),
+    fontWeight: 'bold',
+    color: 'black',
   },
-  emptyText: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  slogan: {
+    alignSelf: 'center',
+    fontWeight: 'bold',
+  },
+  flexStyle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  textFontWeight: {fontWeight: 'bold'},
+  flexColStyle: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  headQuartersStyle: {
+    textAlign: 'center',
+    marginTop: wp(5),
+    fontWeight: 'bold',
   },
 });
 

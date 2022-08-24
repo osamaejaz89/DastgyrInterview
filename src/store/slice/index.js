@@ -1,13 +1,10 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {getApi} from './thunk';
 const initialState = {
-  value: 0,
-  fetching: false,
   cartData: [],
   error: null,
 };
 
-export const counterSlice = createSlice({
+export const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
@@ -21,6 +18,5 @@ export const counterSlice = createSlice({
   },
 });
 
-// Action creators are generated for each case reducer function
-export const {cartData, removeCart} = counterSlice.actions;
-export default counterSlice.reducer;
+export const {cartData, removeCart} = cartSlice.actions;
+export default cartSlice.reducer;
