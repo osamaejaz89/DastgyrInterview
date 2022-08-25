@@ -7,12 +7,14 @@ import {
   ActivityIndicator,
   Image,
   RefreshControl,
+  Linking,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {renderEmpty} from '../../Utils/constant';
+import {useLinkTo} from '@react-navigation/native';
 
 const Flight = props => {
   const [page, setPage] = useState(1);
@@ -20,6 +22,8 @@ const Flight = props => {
   const [loading, setLoading] = useState(false);
   const [flightData, setFlightData] = useState([]);
   const [pageLimit, setPageLimit] = useState(100);
+
+  const linkTo = useLinkTo();
 
   const requestAPI = pageNumber => {
     if (pageNumber === 1) {
@@ -66,14 +70,26 @@ const Flight = props => {
 
         <View>
           {item.airline.map((i, t) => {
+            const handleClick = async () => {
+              await Linking.canOpenURL('https://' + i.website).then(
+                supported => {
+                  if (supported) {
+                    Linking.openURL('https://' + i.website);
+                  } else {
+                    console.log(
+                      "Don't know how to open URI: " + 'https://' + i.website,
+                    );
+                  }
+                },
+              );
+            };
             return (
               <View key={t}>
                 <View style={styles.flexStyle}>
                   <Text style={styles.textFontWeight}>{i.name}</Text>
                   <Text style={styles.textFontWeight}>{i.country}</Text>
                 </View>
-                <View
-                  style={styles.flexColStyle}>
+                <View style={styles.flexColStyle}>
                   <Image
                     style={styles.logo}
                     source={{
@@ -82,14 +98,11 @@ const Flight = props => {
                   />
                   <Text style={styles.slogan}>{i.slogan}</Text>
                 </View>
-                <Text
-                  style={styles.headQuartersStyle}>
-                  {i.head_quaters}
-                </Text>
+                <Text style={styles.headQuartersStyle}>{i.head_quaters}</Text>
                 <View style={styles.flexStyle}>
                   <Text
                     style={{color: 'blue', textDecorationLine: 'underline'}}
-                    onPress={() => Linking.openURL(i.website)}>
+                    onPress={handleClick}>
                     {i.website}
                   </Text>
                   <Text style={styles.textFontWeight}>{i.established}</Text>
